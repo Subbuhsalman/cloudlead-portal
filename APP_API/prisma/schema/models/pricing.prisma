@@ -1,0 +1,143 @@
+enum BillingCycle {
+  monthly
+  yearly
+}
+
+enum SubscriptionStatus {
+  active
+  canceled
+  expired
+  past_due
+}
+
+enum PaymentStatus {
+  pending
+  succeeded
+  failed
+  canceled
+}
+
+model PricingPlan {
+  id               Int          @id @default(autoincrement())
+  name             String       @db.VarChar(100)
+  description      String?      @db.Text
+  price            Decimal      @db.Decimal(10, 2)
+  billing_cycle    BillingCycle
+  credits_included Int
+  stripe_price_id  String       @unique @db.VarChar(100)
+  is_active        Boolean      @default(true)
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
+
+  planFeatures      PlanFeature[]
+  userSubscriptions UserSubscription[]
+
+  @@map("pricing_plans")
+
+}
+
+model Feature {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?  @db.Text
+  credit_cost Int      @default(1)
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  planFeatures    PlanFeature[]
+  creditUsageLogs CreditUsageLog[]
+
+  @@map("feature")
+}
+
+model PlanFeature {
+  id             Int  @id @default(autoincrement())
+  plan_id        Int
+  feature_id     Int
+  included_usage Int?
+
+  PricingPlan PricingPlan @relation(fields: [plan_id], references: [id], onDelete: Cascade)
+  Feature     Feature     @relation(fields: [feature_id], references: [id], onDelete: Cascade)
+
+  @@unique([plan_id, feature_id])
+
+    @@map("plan_feature")
+
+}
+
+model UserSubscription {
+  id                     Int                @id @default(autoincrement())
+  user_id                Int
+  plan_id                Int
+  stripe_subscription_id String?            @unique @db.VarChar(100)
+  status                 SubscriptionStatus @default(active)
+  current_period_start   DateTime
+  current_period_end     DateTime
+  created_at             DateTime           @default(now())
+  updated_at             DateTime           @updatedAt
+
+  PricingPlan    PricingPlan      @relation(fields: [plan_id], references: [id])
+  User           User             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  userCredits    UserCredit[]
+  paymentHistory PaymentHistory[]
+
+  @@map("user_subscription")
+}
+
+model UserCredit {
+  id                Int      @id @default(autoincrement())
+  user_id           Int
+  subscription_id   Int
+  total_credits     Int
+  used_credits      Int      @default(0)
+  remaining_credits Int      @default(0) // Prisma doesn't support GENERATED column natively
+  expires_at        DateTime
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  UserSubscription UserSubscription @relation(fields: [subscription_id], references: [id], onDelete: Cascade)
+  creditUsageLogs  CreditUsageLog[]
+  User             User             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([expires_at])
+
+  @@map("user_credit")
+}
+
+model CreditUsageLog {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  credit_id    Int
+  feature_id   Int
+  credits_used Int
+  description  String?  @db.Text
+  created_at   DateTime @default(now())
+
+  UserCredit UserCredit @relation(fields: [credit_id], references: [id], onDelete: Cascade)
+  Feature    Feature    @relation(fields: [feature_id], references: [id])
+  User       User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([created_at])
+
+  @@map("credit_usage_log")
+}
+
+model PaymentHistory {
+  id                       Int           @id @default(autoincrement())
+  user_id                  Int
+  subscription_id          Int
+  stripe_payment_intent_id String?       @db.VarChar(100)
+  amount                   Decimal       @db.Decimal(10, 2)
+  currency                 String        @default("USD") @db.VarChar(3)
+  status                   PaymentStatus @default(pending)
+  created_at               DateTime      @default(now())
+
+  UserSubscription UserSubscription @relation(fields: [subscription_id], references: [id])
+  User            User            @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  @@index([user_id])
+
+  @@map("payment_history")
+}

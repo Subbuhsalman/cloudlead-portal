@@ -1,0 +1,10 @@
+{
+    "addPost": "/post/",
+    "updatePost": "/post/",
+    "getPaginatedPostList": "/post/list/paginated",
+    "getPaginatedPostListCalendar": "/post/list/calender-view",
+    
+    "deletePost": "/post/",
+    "getPostById": "/post/",
+    "getSelectedPostById": "/post/"
+}

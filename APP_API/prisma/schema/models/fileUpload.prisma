@@ -1,0 +1,39 @@
+enum FileStatus {
+  UPLOADED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum FileType {
+  PDF
+  DOCX
+  TXT
+  XLSX
+  CSV
+  OTHER
+}
+
+model FileUpload {
+  file_upload_id    Int        @id @default(autoincrement())
+  user_id           Int
+  original_filename String
+  file_path         String     @db.LongText
+  file_url          String?    @db.LongText
+  file_size         Int        // Size in bytes
+  file_type         FileType
+  mime_type         String
+  status            FileStatus @default(UPLOADED)
+  admin_notes       String?    @db.Text
+  processed_file_path String?  @db.LongText
+  processed_file_url  String?  @db.LongText
+  processed_by      Int?       // Admin user ID who processed it
+  processed_at      DateTime?
+  created_at        DateTime   @default(now())
+  updated_at        DateTime   @updatedAt
+
+  User              User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  ProcessedBy       AdminUser? @relation(fields: [processed_by], references: [admin_user_id])
+
+  @@map("file_uploads")
+}

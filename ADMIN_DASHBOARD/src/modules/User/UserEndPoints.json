@@ -1,0 +1,6 @@
+{
+    "getPaginatedUserList": "/users/list/paginated",
+    "getUserById": "/users/",
+    "getSelectedUserById": "/users/",
+    "addCreditsToUser": "/users/add-credits/"
+}

@@ -1,0 +1,19 @@
+APP_API/uploads
+
+# Environment files
+.env
+.env.*
+!.env.default
+!.env.example
+!.env.oauth.example
+
+# Local env files in apps
+**/.env.local
+**/.env.production.local
+**/.env.development.local
+**/.env.test.local
+
+# Service account and key material
+**/*serviceAccount*.json
+**/*.pem
+**/*.key

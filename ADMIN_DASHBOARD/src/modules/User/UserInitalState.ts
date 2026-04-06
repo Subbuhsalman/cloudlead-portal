@@ -1,0 +1,17 @@
+export const UserInitialState = {
+  list: [],
+  user: {},
+  menuList: [],
+  loading: false,
+  submitting: false,
+  httpRequest: false,
+  filter: "",
+  sort: "",
+  page: 1,
+  per_page: 10,
+  total_records: 0,
+  success: false,
+  isCreated: false,
+  layoutStyle: "table",
+  isInitialTableDataLoaded: false,
+};

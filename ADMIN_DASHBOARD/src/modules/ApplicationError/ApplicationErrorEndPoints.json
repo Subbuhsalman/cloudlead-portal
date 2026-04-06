@@ -1,0 +1,8 @@
+{
+    "addApplicationError": "/application-error/",
+    "updateApplicationError": "/application-error/",
+    "getPaginatedApplicationErrorList": "/application-error/list/paginated",
+    "deleteApplicationError": "/application-error/",
+    "getApplicationErrorById": "/application-error/",
+    "getSelectedApplicationErrorById": "/application-error/"
+}

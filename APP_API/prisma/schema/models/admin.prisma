@@ -1,0 +1,243 @@
+
+model AdminUser {
+  admin_user_id  Int       @id @default(autoincrement())
+  name           String
+  email          String    @unique
+  email_verified String    @default("NO")
+  password       String    
+  is_active      String    @default("YES")
+  last_loggedin  DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  ProcessedFiles FileUpload[]
+
+  @@map("admin_user")
+}
+
+model Coupon {
+  coupon_id       Int           @id @default(autoincrement())
+  coupon_title    String?
+  code            String        @unique // Unique code for the coupon
+  discount_type   discountTypes
+  discount_value  Float // Percentage or flat discount value
+  usage_limit     Int? // Maximum number of times this coupon can be used
+  used_count      Int           @default(0) // Tracks how many times the coupon has been used
+  user_limit      Int? // Maximum number of times a single user can use this coupon
+  expiration_date DateTime? // Expiry date for the coupon
+  status          String        @default("ACTIVE") // ACTIVE, INACTIVE, EXPIRED
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  OrderCoupons OrderCoupon[]
+
+  @@map("coupons")
+}
+
+model OrderCoupon {
+  order_coupon_id Int      @id @default(autoincrement())
+  order_id        Int
+  coupon_id       Int
+  discount_amount Float // The calculated discount applied to the order
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  Order  Order  @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  Coupon Coupon @relation(fields: [coupon_id], references: [coupon_id], onDelete: Cascade)
+
+  @@map("order_coupons")
+}
+
+enum discountTypes {
+  PERCENTAGE
+  FLAT
+}
+
+
+model TaxRates {
+  tax_rate_id Int     @id @default(autoincrement())
+  country     String
+  province    String
+  tax_rate    Decimal @default(0.0) @db.Decimal(5, 2)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("tax_rates")
+}
+
+model PlatformSettings {
+  platform_setting_id Int @id @default(autoincrement())
+
+  key   String
+  type  String?
+  value String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("platform_settings")
+}
+
+model Transaction {
+  transaction_id         Int               @id @default(autoincrement())
+  user_id                Int?
+  order_id               Int?
+  vendor_membership_id   Int?
+  transaction_identifier String
+  message                String?
+  amount                 Float?
+  type                   String
+  action                 String
+  payment_intent_id      String?           @db.LongText
+  created_at             DateTime          @default(now())
+  updated_at             DateTime          @updatedAt
+  User                   User?             @relation(fields: [user_id], references: [user_id])
+  Order                  Order?            @relation(fields: [order_id], references: [order_id])
+
+  @@map("transaction")
+}
+
+
+model User {
+  user_id                 Int                       @id @default(autoincrement())
+  name                    String
+  email                   String                    @unique
+  email_verified          String                    @default("NO")
+  phone_number_verified   String                    @default("NO")
+  password                String                    @db.VarChar(255)
+  profile_picture         String?                   @db.LongText
+  status                  String                    @default("ACTIVE")
+  user_stripe_account_id  String?
+  PaymentWithdrawalMethod PaymentWithdrawalMethod[]
+  orders                  Order[]
+  UserWallet              UserWallet?
+  UserOtp                 UserOtp[]
+  UserAddress             UserAddress[]
+  created_at              DateTime                  @default(now())
+  updated_at              DateTime                  @updatedAt
+  UserFcmToken            UserFcmToken[]
+  Transaction             Transaction[]
+  UserCredit  UserCredit[]      
+  CreditUsageLog   CreditUsageLog[]  
+  UserSubscription UserSubscription[]
+  PaymentHistory  PaymentHistory[]
+  FileUploads      FileUpload[]
+  @@map("users")
+}
+
+model UserOtp {
+  id          Int      @id @default(autoincrement()) // Unique identifier for OTP
+  guid        String   @unique @default(uuid()) // Unique GUID for the OTP
+  user_id     Int // Foreign key to User model
+  otp         String // OTP value
+  is_verified Boolean  @default(false) // Flag to check if OTP is validated
+  expires_at  DateTime // Expiration time of OTP
+  created_at  DateTime @default(now()) // Timestamp when OTP is created
+  updated_at  DateTime @updatedAt // Timestamp for when the OTP is updated
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade) // Relation to User model
+
+  @@map("user_otp") // Custom table name
+}
+
+model UserWallet {
+  user_wallet_id Int      @id @default(autoincrement())
+  user_id        Int      @unique
+  amount         Float    @default(0.0)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  User           User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("user_wallet")
+}
+
+model UserAddress {
+  user_address_id Int          @id @default(autoincrement())
+  user_id         Int
+  address_type    addressTypes
+  address         String
+  lat             String
+  lon             String
+  meta_data       Json?
+
+  is_default String   @default("NO")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  User       User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("user_address")
+}
+
+model Order {
+  order_id      Int     @id @default(autoincrement())
+  user_id       Int
+  vendor_id     Int
+  sub_total     Float
+  delivery_fee  Float
+  tax           Float   @default(0)
+  is_scheduled  String? @default("NO")
+  delivery_day  String?
+  delivery_time String?
+
+  delivery_address     String?
+  delivery_latitude    Decimal?
+  delivery_longitude   Decimal?
+  delivery_instruction String?          @db.Text
+  payment_method_id    String?
+  order_tip            Float?           @default(0.00)
+  total_amount         Float
+  paid_with            String
+  order_status         String
+  created_at           DateTime         @default(now())
+  updated_at           DateTime         @updatedAt
+  User                 User             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  OrderCoupons         OrderCoupon[]
+  Transaction          Transaction[]
+  @@map("order")
+}
+
+enum addressTypes {
+  office
+  home
+  work
+}
+
+enum paymentTypes {
+  BANK
+  CREDIT_CARD
+}
+
+enum paymentWithdrawalMethodStatusTypes {
+  ACTIVE
+  DISABLED
+}
+
+model PaymentWithdrawalMethod {
+  payment_withdrawal_method Int                                @id @default(autoincrement())
+  user_id                   Int
+  payment_type              paymentTypes
+  meta_data                 Json?
+  status                    paymentWithdrawalMethodStatusTypes
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  User       User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("payment_withdrawal_method")
+}
+
+model UserFcmToken {
+  user_fcm_token_id Int     @id @default(autoincrement())
+  user_id           Int
+  device            String?
+  token             String  @db.LongText
+
+  status String @default("ACTIVE")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  User       User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("user_fcm_token")
+}

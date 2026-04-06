@@ -1,0 +1,431 @@
+import { UserInitialState } from "./UserInitialState";
+
+
+const initialState = {
+  global: {
+    isAlignmentRight: false,
+    rightHandLanguges: [
+      {
+        key: "arabic",
+        value: "arabic",
+        code: "ar",
+      },
+      {
+        key: "hebrwe",
+        value: "hebrwe",
+        code: "hb",
+      },
+      {
+        key: "urdu",
+        value: "urdu",
+        code: "ur",
+      },
+    ],
+    languages: [
+      {
+        key: 1,
+        language: "English",
+        type: "english",
+      },
+      {
+        key: 2,
+        language: "Urdu",
+        type: "urdu",
+      },
+      {
+        key: 3,
+        language: "Hindi",
+        type: "hindi",
+      },
+      {
+        key: 4,
+        language: "Arabic",
+        type: "arabic",
+      },
+      {
+        key: 5,
+        language: "French",
+        type: "french",
+      },
+      {
+        key: 5,
+        language: "Italian",
+        type: "italian",
+      },
+      {
+        key: 5,
+        language: "Spanish",
+        type: "spanish",
+      },
+    ],
+    selectedLangugae: "english",
+    toastId: null,
+    showToast: false,
+    toastMessage: null,
+    toastDetail: null,
+    toastType: "success",
+    toastLife: 3000,
+    // closable:true,
+    sticky: false,
+    //Chunk File Size Globally
+    chunkFileSize: 50000,
+  },
+
+  login: {
+    userName: "",
+    email: "",
+    accessToken: null,
+    jwtToken: "",
+    userId: "",
+    isLoggedIn: false,
+    loading: false,
+    error: null,
+    success: false,
+    redirectTwoFactor: false,
+    twoFactorTempData: null,
+    toast: false,
+    toastMessage: null,
+    toastType: "success",
+    isTempLockCountDown: false,
+    tempLockCountDuration: 0,
+    tryAgainIn: 0, // in minutes
+  },
+
+
+  userInvitationExpiry: {
+    submitting: false,
+    httpRequest: false,
+    loading: false,
+    list: [],
+    menuList: [],
+    filter: "",
+    sort: "user_invitation_expiry.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+  },
+
+  invitation: {
+    submitting: false,
+    httpRequest: false,
+    loading: false,
+    list: null,
+    success: false,
+    success_message: "",
+    filter: "",
+    sort: "user_invitation.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    isSubmit: false,
+    employeeDetails: null,
+  },
+
+  BruteForce: {
+    loading: false,
+    list: [],
+    filter: "",
+    sort: "brute_force.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+    success_message_title: "",
+    success_message_type: "success",
+  },
+
+  SuspiciousLockedAccounts: {
+    loading: false,
+    list: [],
+    filter: "",
+    sort: "locked_account.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+    success_message_title: "",
+    success_message_type: "success",
+  },
+  articles: [],
+  info: {},
+
+  /**
+   * TODO delete after refactor
+   */
+  menuList: {
+    loading: false,
+    menuData: [],
+  },
+
+  VideoMenu: {
+    loading: false,
+    menuData: [],
+  },
+  Exceptions: {
+    loading: false,
+    list: [],
+    tableList: [],
+    filter: "",
+    sort: "application_code_exception.created_at|desc",
+    page: 1,
+    per_page: 10,
+    total_records: 0,
+    success: false,
+    success_message: "",
+  },
+  socketInfoReducer: {
+    connected: false,
+  },
+  contactInfo: {
+    loading: false,
+    list: [],
+    tableList: [],
+    listWithChilds: [],
+    filter: "",
+    sort: "created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+  },
+  brandLogo: {
+    loading: false,
+    list: [],
+    tableList: [],
+    listWithChilds: [],
+    filter: "",
+    sort: "created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+  },
+  shippingAddress: {
+    loading: false,
+    list: [],
+    tableList: [],
+    listWithChilds: [],
+    filter: "",
+    sort: "created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+  },
+  billingInfo: {
+    loading: false,
+    list: [],
+    tableList: [],
+    listWithChilds: [],
+    filter: "",
+    sort: "created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+  },
+  Configation: {
+    loading: false,
+    config_form: "",
+    general_settings: null,
+    success: false,
+    success_message: "",
+    success_message_title: "",
+  },
+
+  billingAddress: {
+    loading: false,
+    list: [],
+    tableList: [],
+    listWithChilds: [],
+    filter: "",
+    sort: "created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+  },
+
+  allRoles: {
+    loading: false,
+    list: null,
+    menuList: [],
+    filter: "",
+    sort: "role_permission.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+  },
+
+  /**
+   * @TODO refactor User Profile? what is this for?
+   */
+  userProfile: {
+    loading: false,
+    list: null,
+    tableList: [],
+    listWithChilds: [],
+    filter: "",
+    sort: "created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+    config_form: "",
+  },
+
+  customField: {
+    submitting: false,
+    httpRequest: false,
+    loading: false,
+    list: null,
+    menuList: [],
+    filter: "",
+    sort: "custom_field.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+    isSubmit: false,
+  },
+
+  staffMember: {
+    submitting: false,
+    httpRequest: false,
+    loading: false,
+    list: null,
+    menuList: [],
+    filter: "",
+    sort: "staff_member.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+    isSubmit: false,
+  },
+
+  team: {
+    submitting: false,
+    httpRequest: false,
+    loading: false,
+    list: null,
+    menuList: [],
+    filter: "",
+    sort: "team.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+    isSubmit: false,
+  },
+
+  group: {
+    submitting: false,
+    httpRequest: false,
+    loading: false,
+    list: null,
+    menuList: [],
+    filter: "",
+    sort: "group.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+    isSubmit: false,
+  },
+  ticketingDepartment: {
+    submitting: false,
+    httpRequest: false,
+    loading: false,
+    list: null,
+    menuList: [],
+    filter: "",
+    sort: "ticketing_department.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+    isSubmit: false,
+  },
+  email: {
+    submitting: false,
+    httpRequest: false,
+    loading: false,
+    list: null,
+    menuList: [],
+    filter: "",
+    sort: "email.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+    isSubmit: false,
+  },
+  emailBanlist: {
+    submitting: false,
+    httpRequest: false,
+    loading: false,
+    list: null,
+    menuList: [],
+    filter: "",
+    sort: "email_banlist.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+    isSubmit: false,
+  },
+
+  emailTemplate: {
+    submitting: false,
+    httpRequest: false,
+    loading: false,
+    list: null,
+    menuList: [],
+    filter: "",
+    sort: "email_template.created_at|desc",
+    total_records: 0,
+    page: 1,
+    per_page: 10,
+    success: false,
+    success_message: "",
+    isSubmit: false,
+  },
+
+  ...UserInitialState
+};
+export default initialState;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

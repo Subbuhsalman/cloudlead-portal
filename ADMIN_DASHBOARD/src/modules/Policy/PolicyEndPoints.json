@@ -1,0 +1,8 @@
+{
+    "addPolicy": "/policy/",
+    "updatePolicy": "/policy/",
+    "getPaginatedPolicyList": "/policy/list/paginated",
+    "deletePolicy": "/policy/",
+    "getPolicyById": "/policy/",
+    "getSelectedPolicyById": "/policy/"
+}

@@ -1,0 +1,431 @@
+model AdminUser {
+  admin_user_id  Int       @id @default(autoincrement())
+  name           String
+  email          String    @unique
+  email_verified String    @default("NO")
+  password       String
+  is_active      String    @default("YES")
+  last_loggedin  DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  ProcessedFiles FileUpload[]
+
+  @@map("admin_user")
+}
+
+model Coupon {
+  coupon_id       Int           @id @default(autoincrement())
+  coupon_title    String?
+  code            String        @unique // Unique code for the coupon
+  discount_type   discountTypes
+  discount_value  Float // Percentage or flat discount value
+  usage_limit     Int? // Maximum number of times this coupon can be used
+  used_count      Int           @default(0) // Tracks how many times the coupon has been used
+  user_limit      Int? // Maximum number of times a single user can use this coupon
+  expiration_date DateTime? // Expiry date for the coupon
+  status          String        @default("ACTIVE") // ACTIVE, INACTIVE, EXPIRED
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  OrderCoupons OrderCoupon[]
+
+  @@map("coupons")
+}
+
+model OrderCoupon {
+  order_coupon_id Int      @id @default(autoincrement())
+  order_id        Int
+  coupon_id       Int
+  discount_amount Float // The calculated discount applied to the order
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  Order  Order  @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  Coupon Coupon @relation(fields: [coupon_id], references: [coupon_id], onDelete: Cascade)
+
+  @@map("order_coupons")
+}
+
+enum discountTypes {
+  PERCENTAGE
+  FLAT
+}
+
+model TaxRates {
+  tax_rate_id Int     @id @default(autoincrement())
+  country     String
+  province    String
+  tax_rate    Decimal @default(0.0) @db.Decimal(5, 2)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("tax_rates")
+}
+
+model PlatformSettings {
+  platform_setting_id Int @id @default(autoincrement())
+
+  key   String
+  type  String?
+  value String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("platform_settings")
+}
+
+model Transaction {
+  transaction_id         Int      @id @default(autoincrement())
+  user_id                Int?
+  order_id               Int?
+  vendor_membership_id   Int?
+  transaction_identifier String
+  message                String?
+  amount                 Float?
+  type                   String
+  action                 String
+  payment_intent_id      String?  @db.LongText
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+  User                   User?    @relation(fields: [user_id], references: [user_id])
+  Order                  Order?   @relation(fields: [order_id], references: [order_id])
+
+  @@map("transaction")
+}
+
+model User {
+  user_id                 Int                       @id @default(autoincrement())
+  name                    String
+  email                   String                    @unique
+  email_verified          String                    @default("NO")
+  phone_number_verified   String                    @default("NO")
+  password                String                    @db.VarChar(255)
+  profile_picture         String?                   @db.LongText
+  status                  String                    @default("ACTIVE")
+  user_stripe_account_id  String?
+  PaymentWithdrawalMethod PaymentWithdrawalMethod[]
+  orders                  Order[]
+  UserWallet              UserWallet?
+  UserOtp                 UserOtp[]
+  UserAddress             UserAddress[]
+  created_at              DateTime                  @default(now())
+  updated_at              DateTime                  @updatedAt
+  UserFcmToken            UserFcmToken[]
+  Transaction             Transaction[]
+  UserCredit              UserCredit[]
+  CreditUsageLog          CreditUsageLog[]
+  UserSubscription        UserSubscription[]
+  PaymentHistory          PaymentHistory[]
+  FileUploads             FileUpload[]
+
+  @@map("users")
+}
+
+model UserOtp {
+  id          Int      @id @default(autoincrement()) // Unique identifier for OTP
+  guid        String   @unique @default(uuid()) // Unique GUID for the OTP
+  user_id     Int // Foreign key to User model
+  otp         String // OTP value
+  is_verified Boolean  @default(false) // Flag to check if OTP is validated
+  expires_at  DateTime // Expiration time of OTP
+  created_at  DateTime @default(now()) // Timestamp when OTP is created
+  updated_at  DateTime @updatedAt // Timestamp for when the OTP is updated
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade) // Relation to User model
+
+  @@map("user_otp") // Custom table name
+}
+
+model UserWallet {
+  user_wallet_id Int      @id @default(autoincrement())
+  user_id        Int      @unique
+  amount         Float    @default(0.0)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  User           User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("user_wallet")
+}
+
+model UserAddress {
+  user_address_id Int          @id @default(autoincrement())
+  user_id         Int
+  address_type    addressTypes
+  address         String
+  lat             String
+  lon             String
+  meta_data       Json?
+
+  is_default String   @default("NO")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  User       User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("user_address")
+}
+
+model Order {
+  order_id      Int     @id @default(autoincrement())
+  user_id       Int
+  vendor_id     Int
+  sub_total     Float
+  delivery_fee  Float
+  tax           Float   @default(0)
+  is_scheduled  String? @default("NO")
+  delivery_day  String?
+  delivery_time String?
+
+  delivery_address     String?
+  delivery_latitude    Decimal?
+  delivery_longitude   Decimal?
+  delivery_instruction String?       @db.Text
+  payment_method_id    String?
+  order_tip            Float?        @default(0.00)
+  total_amount         Float
+  paid_with            String
+  order_status         String
+  created_at           DateTime      @default(now())
+  updated_at           DateTime      @updatedAt
+  User                 User          @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  OrderCoupons         OrderCoupon[]
+  Transaction          Transaction[]
+
+  @@map("order")
+}
+
+enum addressTypes {
+  office
+  home
+  work
+}
+
+enum paymentTypes {
+  BANK
+  CREDIT_CARD
+}
+
+enum paymentWithdrawalMethodStatusTypes {
+  ACTIVE
+  DISABLED
+}
+
+model PaymentWithdrawalMethod {
+  payment_withdrawal_method Int                                @id @default(autoincrement())
+  user_id                   Int
+  payment_type              paymentTypes
+  meta_data                 Json?
+  status                    paymentWithdrawalMethodStatusTypes
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  User       User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("payment_withdrawal_method")
+}
+
+model UserFcmToken {
+  user_fcm_token_id Int     @id @default(autoincrement())
+  user_id           Int
+  device            String?
+  token             String  @db.LongText
+
+  status String @default("ACTIVE")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  User       User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("user_fcm_token")
+}
+
+enum FileStatus {
+  UPLOADED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum FileType {
+  PDF
+  DOCX
+  TXT
+  XLSX
+  CSV
+  OTHER
+}
+
+model FileUpload {
+  file_upload_id      Int        @id @default(autoincrement())
+  user_id             Int
+  original_filename   String
+  file_path           String     @db.LongText
+  file_url            String?    @db.LongText
+  file_size           Int // Size in bytes
+  file_type           FileType
+  mime_type           String
+  status              FileStatus @default(UPLOADED)
+  admin_notes         String?    @db.Text
+  processed_file_path String?    @db.LongText
+  processed_file_url  String?    @db.LongText
+  processed_by        Int? // Admin user ID who processed it
+  processed_at        DateTime?
+  created_at          DateTime   @default(now())
+  updated_at          DateTime   @updatedAt
+
+  User        User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  ProcessedBy AdminUser? @relation(fields: [processed_by], references: [admin_user_id])
+
+  @@map("file_uploads")
+}
+
+enum BillingCycle {
+  monthly
+  yearly
+}
+
+enum SubscriptionStatus {
+  active
+  canceled
+  expired
+  past_due
+}
+
+enum PaymentStatus {
+  pending
+  succeeded
+  failed
+  canceled
+}
+
+model PricingPlan {
+  id               Int          @id @default(autoincrement())
+  name             String       @db.VarChar(100)
+  description      String?      @db.Text
+  price            Decimal      @db.Decimal(10, 2)
+  billing_cycle    BillingCycle
+  credits_included Int
+  stripe_price_id  String       @unique @db.VarChar(100)
+  is_active        Boolean      @default(true)
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
+
+  planFeatures      PlanFeature[]
+  userSubscriptions UserSubscription[]
+
+  @@map("pricing_plans")
+}
+
+model Feature {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?  @db.Text
+  credit_cost Int      @default(1)
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  planFeatures    PlanFeature[]
+  creditUsageLogs CreditUsageLog[]
+
+  @@map("feature")
+}
+
+model PlanFeature {
+  id             Int  @id @default(autoincrement())
+  plan_id        Int
+  feature_id     Int
+  included_usage Int?
+
+  PricingPlan PricingPlan @relation(fields: [plan_id], references: [id], onDelete: Cascade)
+  Feature     Feature     @relation(fields: [feature_id], references: [id], onDelete: Cascade)
+
+  @@unique([plan_id, feature_id])
+  @@map("plan_feature")
+}
+
+model UserSubscription {
+  id                     Int                @id @default(autoincrement())
+  user_id                Int
+  plan_id                Int
+  stripe_subscription_id String?            @unique @db.VarChar(100)
+  status                 SubscriptionStatus @default(active)
+  current_period_start   DateTime
+  current_period_end     DateTime
+  created_at             DateTime           @default(now())
+  updated_at             DateTime           @updatedAt
+
+  PricingPlan    PricingPlan      @relation(fields: [plan_id], references: [id])
+  User           User             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  userCredits    UserCredit[]
+  paymentHistory PaymentHistory[]
+
+  @@map("user_subscription")
+}
+
+model UserCredit {
+  id                Int      @id @default(autoincrement())
+  user_id           Int
+  subscription_id   Int
+  total_credits     Int
+  used_credits      Int      @default(0)
+  remaining_credits Int      @default(0) // Prisma doesn't support GENERATED column natively
+  expires_at        DateTime
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  UserSubscription UserSubscription @relation(fields: [subscription_id], references: [id], onDelete: Cascade)
+  creditUsageLogs  CreditUsageLog[]
+  User             User             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([expires_at])
+  @@map("user_credit")
+}
+
+model CreditUsageLog {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  credit_id    Int
+  feature_id   Int
+  credits_used Int
+  description  String?  @db.Text
+  created_at   DateTime @default(now())
+
+  UserCredit UserCredit @relation(fields: [credit_id], references: [id], onDelete: Cascade)
+  Feature    Feature    @relation(fields: [feature_id], references: [id])
+  User       User       @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([created_at])
+  @@map("credit_usage_log")
+}
+
+model PaymentHistory {
+  id                       Int           @id @default(autoincrement())
+  user_id                  Int
+  subscription_id          Int
+  stripe_payment_intent_id String?       @db.VarChar(100)
+  amount                   Decimal       @db.Decimal(10, 2)
+  currency                 String        @default("USD") @db.VarChar(3)
+  status                   PaymentStatus @default(pending)
+  created_at               DateTime      @default(now())
+
+  UserSubscription UserSubscription @relation(fields: [subscription_id], references: [id])
+  User             User             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("payment_history")
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../generated/prisma"
+}

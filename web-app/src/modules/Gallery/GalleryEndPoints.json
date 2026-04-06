@@ -1,0 +1,8 @@
+{
+    "addGallery": "/gallery/",
+    "updateGallery": "/gallery/",
+    "getPaginatedGalleryList": "/gallery/list/paginated",
+    "deleteGallery": "/gallery/",
+    "getGalleryById": "/gallery/",
+    "getSelectedGalleryById": "/gallery/"
+}

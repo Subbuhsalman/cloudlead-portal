@@ -1,0 +1,8 @@
+{
+    "addProduct": "/product/",
+    "updateProduct": "/product/",
+    "getPaginatedProductList": "/product/list/paginated",
+    "deleteProduct": "/product/",
+    "getProductById": "/product/",
+    "getSelectedProductById": "/product/"
+}

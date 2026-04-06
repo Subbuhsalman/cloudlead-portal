@@ -1,0 +1,94 @@
+{
+    "webpushtoken": "/webpushtoken",
+    "accpetReject": "/accept-reject/",
+
+    "getInvitationDetails": "/invitation/detail",
+    "deleteInvitation": "/invitation/delete",
+    "getInvitations": "/invitation",
+    "updateInvitation": "/invitation/update/",
+    "updateUserInvited": "/invitation/update-user/",
+    "updateUserData": "/user-info/update/details",
+
+
+    "addUserInvitationExpiry": "/user-invitation-expiry/create",
+    "getUserInvitationExpiry": "/user-invitation-expiry/",
+    "addOrUpdateContactInfo": "/settings/details/contact-info/create",
+    "addOrUpdateBrandLogos": "/settings/details/brand-logo/create",
+    "deleteUserInvitationExpiry": "/user-invitation-expiry/delete/",
+    "updateUserInvitationExpiry": "/user-invitation-expiry/update/",
+
+    "addOrUpdateShippingAddress": "/settings/details/shipping-address/create",
+    "addOrUpdateBillingInfo": "/settings/billing/info/create",
+    "addOrUpdateBillingAddress": "/settings/billing/address/create",
+    "addOrUpdateConfigurationSettings": "/configuration/general-setting",
+    "addOrUpdateConfigurationSettingsBulk": "/configuration/general-settings",
+
+    "getAllPlatformSettings": "/platform-settings/",
+
+    "getStudioDetails": "/settings/details",
+
+
+
+    "getBruteForceAttacks": "/brute-force/",
+    "getSuspiciousLockedAccounts": "/locked-accounts",
+
+
+
+    "unlockAccount": "/unlock-user-lock",
+
+    "addOrUpdateUserProfile": "/user-info/update/details",
+
+    "updateUserEmail": "/user-info/update/email/",
+    "updateUserPassword": "/user-info/update/password/",
+    "getUserProfileDetails": "/contact/",
+    "getLoginActivity": "/user-login-history/",
+
+
+
+    "addCustomField": "/custom-field/create",
+    "updateCustomField": "/custom-field/update/",
+    "getCustomField": "/custom-field/",
+    "deleteCustomField": "/custom-field/delete/",
+
+
+
+    "addStaffMember": "/ticketing/staff/member/create",
+    "updateStaffMember": "/ticketing/staff/member/update/",
+    "getStaffMember": "/ticketing/staff/member/",
+    "deleteStaffMember": "/ticketing/staff/member/delete/",
+    "addTeam": "/ticketing/staff/team/create",
+    "updateTeam": "/ticketing/staff/team/update/",
+    "getTeam": "/ticketing/staff/team/",
+    "deleteTeam": "/ticketing/staff/team/delete/",
+    "addGroup": "/ticketing/staff/group/create",
+    "updateGroup": "/ticketing/staff/group/update/",
+    "getGroup": "/ticketing/staff/group/",
+    "deleteGroup": "/ticketing/staff/group/delete/",
+    "addTicketingDepartment": "/ticketing/staff/department/create",
+    "updateTicketingDepartment": "/ticketing/staff/department/update/",
+    "getTicketingDepartment": "/ticketing/staff/department/",
+    "deleteTicketingDepartment": "/ticketing/staff/department/delete/",
+    "addEmail": "/ticketing/email/create",
+    "updateEmail": "/ticketing/email/update/",
+    "getEmail": "/ticketing/email/",
+    "deleteEmail": "/ticketing/email/delete/",
+    "addEmailBanlist": "/ticketing/email/banlist/create",
+    "updateEmailBanlist": "/ticketing/email/banlist/update/",
+    "getEmailBanlist": "/ticketing/email/banlist/",
+    "deleteEmailBanlist": "/ticketing/email/banlist/delete/",
+    "addEmailTemplate": "/ticketing/email/template/create",
+    "updateEmailTemplate": "/ticketing/email/template/update/",
+    "getEmailTemplate": "/ticketing/email/template/",
+    "deleteEmailTemplate": "/ticketing/email/template/delete/",
+
+    "addRole": "/role/create",
+    "updateRole": "/role/update/",
+    "getRole": "/role/",
+    "deleteRole": "/role/delete/",
+
+    "addDepartment": "/department/create",
+    "updateDepartment": "/department/update/",
+    "getDepartment": "/department/",
+    "deleteDepartment": "/department/delete/"
+
+}
